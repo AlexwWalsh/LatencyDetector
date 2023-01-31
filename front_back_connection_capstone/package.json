@@ -1,0 +1,15 @@
+{
+  "name": "front_back_connection_capstone",
+  "version": "1.0.0",
+  "description": "capstone",
+  "main": "server.js",
+  "dependencies": {
+    "ws": "^8.12.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

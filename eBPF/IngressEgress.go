@@ -15,8 +15,6 @@ import (
 	"github.com/cilium/ebpf/rlimit"
 )
 
-// $BPF_CLANG and $BPF_CFLAGS are set by the Makefile.
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc $BPF_CLANG -cflags $BPF_CFLAGS bpf cgroup_skb.c -- -I../headers
 //type bpfObjects struct {
 //	CountEgressPackets  ebpf.Program
 //	CountIngressPackets ebpf.Program
