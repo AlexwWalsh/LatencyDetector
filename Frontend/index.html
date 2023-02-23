@@ -9,8 +9,8 @@
             $("button").click(function(){
                 $.get("http://localhost:3000/grabMuxInfo", function(data, status){
                     var dataObject = JSON.parse(data); //JSONify the string response from node.js server
-                    var objectCount = Object.keys(dataObject.nodes).length;
-                    console.log(dataObject.nodes[0].id);
+                    var objectCount = Object.keys(dataObject.nodes).length; //grab the number of objects in the data response
+                    // console.log(dataObject.nodes[0].id);
 
                     var node = document.getElementById('content');
                     for (let i = 0; i < objectCount; i++) {
