@@ -10,13 +10,13 @@ import (
 )
 
 type Response struct {
-	Persons []Person `json:"persons"`
+	Nodes []Node `json:"nodes"`
 }
 
-type Person struct {
-	Id        int    `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+type Node struct {
+	Id         int    `json:"id"`
+	Ingressing string `json:"ingressing"`
+	Egressing  string `json:"egressing"`
 }
 
 func main() {
@@ -42,9 +42,9 @@ func serverCheck(w http.ResponseWriter, r *http.Request) {
 func Data(w http.ResponseWriter, r *http.Request) {
 	log.Println("Successfully entered '/data' endpoint")
 	var response Response
-	persons := prepareResponse()
+	nodes := prepareResponse()
 
-	response.Persons = persons
+	response.Nodes = nodes
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -56,23 +56,23 @@ func Data(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-func prepareResponse() []Person {
-	var persons []Person
+func prepareResponse() []Node {
+	var nodes []Node
 
-	var person Person
-	person.Id = 1
-	person.FirstName = "Alex"
-	person.LastName = "Walsh"
-	persons = append(persons, person)
+	var node Node
+	node.Id = 1
+	node.Ingressing = "9876"
+	node.Egressing = "456"
+	nodes = append(nodes, node)
 
-	person.Id = 2
-	person.FirstName = "Daniel"
-	person.LastName = "Lira"
-	persons = append(persons, person)
+	node.Id = 2
+	node.Ingressing = "123"
+	node.Egressing = "6543"
+	nodes = append(nodes, node)
 
-	person.Id = 3
-	person.FirstName = "Jose"
-	person.LastName = "Gonzales"
-	persons = append(persons, person)
-	return persons
+	node.Id = 3
+	node.Ingressing = "4567"
+	node.Egressing = "398"
+	nodes = append(nodes, node)
+	return nodes
 }
