@@ -53,7 +53,8 @@ type bpfSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfProgramSpecs struct {
-	CountEgressPackets *ebpf.ProgramSpec `ebpf:"count_egress_packets"`
+	CountEgressPackets  *ebpf.ProgramSpec `ebpf:"count_egress_packets"`
+	CountIngressPackets *ebpf.ProgramSpec `ebpf:"count_ingress_packets"`
 }
 
 // bpfMapSpecs contains maps before they are loaded into the kernel.
@@ -95,12 +96,14 @@ func (m *bpfMaps) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfPrograms struct {
-	CountEgressPackets *ebpf.Program `ebpf:"count_egress_packets"`
+	CountEgressPackets  *ebpf.Program `ebpf:"count_egress_packets"`
+	CountIngressPackets *ebpf.Program `ebpf:"count_ingress_packets"`
 }
 
 func (p *bpfPrograms) Close() error {
 	return _BpfClose(
 		p.CountEgressPackets,
+		p.CountIngressPackets,
 	)
 }
 

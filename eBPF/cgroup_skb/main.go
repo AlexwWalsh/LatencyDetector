@@ -23,10 +23,74 @@ import (
 
 func main() {
 	// Allow the current process to lock memory for eBPF resources.
-	countPackets()
+	go countPacketsEgress()
+	go countPacketsIngress()
+
+	time.Sleep(23 * time.Second)
 }
 
-func countPackets() uint64 {
+// func runParallel(){
+// 	result1 := make(chan string)
+// 	result2 := make(chan string)
+
+// 	go func(){
+// 		result1 <-
+// 	}()
+// }
+
+func countPacketsIngress() uint64 {
+	if err := rlimit.RemoveMemlock(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Load pre-compiled programs and maps into the kernel.
+	objs1 := bpfObjects{}
+	if err := loadBpfObjects(&objs1, nil); err != nil {
+		log.Fatalf("loading objects: %v", err)
+	}
+	defer objs1.Close()
+
+	// Get the first-mounted cgroupv2 path.
+	cgroupPath, err := detectCgroupPath()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Link the count_ingress_packets program to the cgroup.
+	l, err := link.AttachCgroup(link.CgroupOptions{
+		Path:    cgroupPath,
+		Attach:  ebpf.AttachCGroupInetIngress,
+		Program: objs1.CountIngressPackets,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer l.Close()
+
+	log.Println("Counting Ingressing packets...")
+
+	// Read loop reporting the total amount of times the kernel
+	// function was entered, once per second.
+
+	// ticker := time.NewTicker(1 * time.Second)
+
+	var loops = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	var value uint64
+	for range loops {
+
+		if err := objs1.PktCount.Lookup(uint32(0), &value); err != nil {
+			log.Fatalf("reading map: %v", err)
+		}
+		// log.Printf("number of packets: %d\n", value)
+		// fmt.Println("number of packets: \n", value)
+		time.Sleep(2 * time.Second)
+
+	}
+	fmt.Println(value, ",")
+	return 0
+}
+
+func countPacketsEgress() uint64 {
 	if err := rlimit.RemoveMemlock(); err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +119,7 @@ func countPackets() uint64 {
 	}
 	defer l.Close()
 
-	log.Println("Counting packets...")
+	log.Println("Counting Egressing packets...")
 
 	// Read loop reporting the total amount of times the kernel
 	// function was entered, once per second.
@@ -74,6 +138,7 @@ func countPackets() uint64 {
 		time.Sleep(2 * time.Second)
 
 	}
+	time.Sleep(1 * time.Second)
 	fmt.Println(value)
 	return 0
 }
