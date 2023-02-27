@@ -1,0 +1,26 @@
+
+button, h2{
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+};
+
+.node-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  .node {
+    display: inline-block;
+    padding: 5px;  
+    border: 1px solid black;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: yellow;
+    width: auto;
+    align-items: center;
+  }
+  
