@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -81,14 +82,24 @@ func prepareResponse() []Node {
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
+	//Ingress is always the first number
+	//Egress is always the second number
+	//Timing is set to finish counting loop in the same second, but wait a extra second to output egressing so we can tell
 
-	fmt.Println("Output:", string(output))
+	var outputString = string(output)
+	splitString := strings.Split(outputString, " ,\n")
+
+	ingressCount := splitString[0]
+	egressCount := splitString[1]
+	fmt.Println("Ingress:", ingressCount)
+	fmt.Println("Egress:", egressCount)
+
 	var i int
 	i = 1
 	var node Node
 	node.Id = i
-	node.Ingressing = "9876"
-	node.Egressing = output
+	node.Ingressing = ingressCount
+	node.Egressing = egressCount
 	nodes = append(nodes, node)
 
 	// node.Id = 2

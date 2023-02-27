@@ -25,3 +25,18 @@ int count_egress_packets(struct __sk_buff *skb) {
 
 	return 1;
 }
+
+SEC("cgroup_skb/ingress")
+int count_ingress_packets(struct __sk_buff *skb) {
+	u32 key      = 0;
+	u64 init_val = 1;
+
+	u64 *count = bpf_map_lookup_elem(&pkt_count, &key);
+	if (!count) {
+		bpf_map_update_elem(&pkt_count, &key, &init_val, BPF_ANY);
+		return 1;
+	}
+	__sync_fetch_and_add(count, 1);
+
+	return 1;
+}
