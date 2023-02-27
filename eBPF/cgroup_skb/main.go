@@ -1,5 +1,4 @@
-// This program demonstrates attaching an eBPF program to a control group.
-// The eBPF program will be attached as an egress filter,
+// The eBPF program will be attached as an packet filter,
 // receiving an `__sk_buff` pointer for each outgoing packet.
 // It prints the count of total packets every second.
 package main
@@ -123,9 +122,7 @@ func countPacketsEgress() uint64 {
 
 	// Read loop reporting the total amount of times the kernel
 	// function was entered, once per second.
-
 	// ticker := time.NewTicker(1 * time.Second)
-
 	var loops = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	var value uint64
 	for range loops {
