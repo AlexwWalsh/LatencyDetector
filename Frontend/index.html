@@ -1,25 +1,24 @@
 <html>
     <head>
-        <style>
-
-          </style>
+        <link rel="stylesheet" href="style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
         <script>
-        $(document).ready(function(){
+          $(document).ready(function(){
             $("button").click(function(){
                 $.get("http://localhost:3000/grabMuxInfo", function(data, status){
                     var dataObject = JSON.parse(data); //JSONify the string response from node.js server
                     var objectCount = Object.keys(dataObject.nodes).length; //grab the number of objects in the data response
                     // console.log(dataObject.nodes[0].id);
 
-                    var node = document.getElementById('content');
                     for (let i = 0; i < objectCount; i++) {
                         let idField = `<h5>Node Id: ${dataObject.nodes[i].id}</h5>`;
                         let ingressingField = `<h4><strong>Packets Ingressing:</strong> ${dataObject.nodes[i].ingressing}</h4>`;
                         let egressingField = `<h4><strong>Packets Egressing: </strong>${dataObject.nodes[i].egressing}</h4>`;
 
-                        node.innerHTML += idField + ingressingField + egressingField + '<br>' + '<br>';
-                        // alert("Data: " + data + "\nStatus: " + status);
+                        let node = document.createElement('div');
+                        node.classList.add('node');
+                        node.innerHTML += idField + ingressingField + egressingField;
+                        document.getElementById('content').appendChild(node);
                     }
                 });
             });
@@ -27,10 +26,14 @@
         </script>
     </head>
     <body>
-        <div id="content">
+        <div id="content" class="node-container">
             <h2>List Data from Mux Server:</h2>
-        </div>
-        <button>Request data from Localhost 3000 endpoint (Node.JS), which requests from 8080 endpoint (Go)</button>
-
+          </div>
+          
+        <div id="mind-map"></div>
+        <button>Request data from Go localhost 3000 endpoint (Node.js), which requests from 8080 endpoint (Go)</button>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+        <script src="Front-end.js"></script>
     </body>
+    
 </html>
