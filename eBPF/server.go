@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 
 	"github.com/gorilla/mux"
 )
@@ -56,23 +58,47 @@ func Data(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
+func runPackage() (string, error) {
+	cmd := exec.Command("sudo", "go", "run", "./cgroup_skb")
+
+	var stdout bytes.Buffer
+
+	cmd.Stdout = &stdout
+
+	if err := cmd.Run(); err != nil {
+		return "Error running packages: ", err
+	}
+
+	output := stdout.String()
+	return output, nil
+}
+
 func prepareResponse() []Node {
 	var nodes []Node
 
+	output, err := runPackage()
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	fmt.Println("Output:", string(output))
+	var i int
+	i = 1
 	var node Node
-	node.Id = 1
+	node.Id = i
 	node.Ingressing = "9876"
-	node.Egressing = "456"
+	node.Egressing = output
 	nodes = append(nodes, node)
 
-	node.Id = 2
-	node.Ingressing = "123"
-	node.Egressing = "6543"
-	nodes = append(nodes, node)
+	// node.Id = 2
+	// node.Ingressing = "123"
+	// node.Egressing = "6543"
+	// nodes = append(nodes, node)
 
-	node.Id = 3
-	node.Ingressing = "4567"
-	node.Egressing = "398"
-	nodes = append(nodes, node)
+	// node.Id = 3
+	// node.Ingressing = "4567"
+	// node.Egressing = "398"
+	// nodes = append(nodes, node)
 	return nodes
 }
