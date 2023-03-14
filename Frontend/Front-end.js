@@ -21,3 +21,14 @@
 //             });
 //     });
 // });
+
+request = document.querySelector(".request");
+
+request.onclick = function() {
+    this.innerHTML = "<div class='loader'> </div>";
+    setTimeout(() => {
+        this.innerHTML = "Successfull request"
+        this.style = "background: green; color white; pointer-events: none;"
+    }, 25000);
+}
+

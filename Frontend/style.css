@@ -1,26 +1,70 @@
 
-button, h2{
+html{
+  background-color: #696969;
+}
+button{
     display: block;
     margin: 0 auto;
     text-align: center;
-};
+    
+}
+.request{
+    background-color: red;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 50px;
+    box-shadow: 0px 8px 5px -5px #000;
+    display: grid;
+    place-content: center;
+}
+
+.loader{
+  pointer-events: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #fff;
+  animation: btn-animation 1s ease infinite;
+  
+}
+@keyframes btn-animation {
+  0%{
+    transform: rotate(0turn);
+  }
+  100%{
+    transform: rotate(1turn);
+  }
+}
+
+h2{
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
 
 .node-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-top: 20px;
+    left: 0;
+    /*flex-wrap: wrap;
+    margin-top: 20px;*/
   }
-  
+  /*this one is for the nodes design*/
   .node {
-    display: inline-block;
+    
     padding: 5px;  
     border: 1px solid black;
     margin: 5px;
-    border-radius: 5px;
-    background-color: yellow;
+    border-radius: 30%;
+    background-color: #60ab31;
     width: auto;
-    align-items: center;
+
   }
   
+  .change{
+    width: 150px;
+    height: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
