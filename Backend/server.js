@@ -1,9 +1,12 @@
 const express = require('express');
 const http = require('http');
+const WebSocket = require('ws');
+const bodyParser = require('body-parser');
 
 const app = express();
+const wss = new WebSocket.Server({ port: 5000 });
 
-//Confirm cors settings for correct header info
+let ipAddresses = []; // your list of IP addresses
 const cors=require("cors");
 const corsOptions ={
    origin:'*', 
@@ -12,6 +15,8 @@ const corsOptions ={
 }
 
 app.use(cors(corsOptions)) // Use this after the variable declaration
+
+app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Node.js REST server!');
@@ -22,30 +27,44 @@ const server = app.listen(3000, () => {
   console.log('Node.js REST server is running on port 3000');
 });
 
-//Endpoint that forwards the request to Gorilla Mux server on 8080, returns result back to client
+app.post('/server', (req, res) => {
+  const newData = req.body
+  // console.log("req.body", req.body)
+  ipAddresses.push(newData);
+  console.log("IP addresses: ", ipAddresses)
+  wss.clients.forEach(client => {
+    client.send(JSON.stringify(ipAddresses))
+  });
+  res.send("Node server recieved IP Address")
+})
+
+
 app.get('/grabMuxInfo', (req, res) => {
-    const options = {
-      hostname: 'localhost',
-      port: 8080,
-      path: '/data',
-      method: 'GET'
-    };
+  const options = {
+    hostname: 'localhost',
+    port: 8080,
+    path: '/data',
+    method: 'GET'
+  };
 
-    const gorrilaReq = http.request(options, (gorrilaRes) => {
-      let data = '';
-      gorrilaRes.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      gorrilaRes.on('end', () => {
-        res.send(data);
-      });
+  const gorrilaReq = http.request(options, (gorrilaRes) => {
+    let data = '';
+    gorrilaRes.on('data', (chunk) => {
+      data += chunk;
     });
 
-    gorrilaReq.on('error', (error) => {
-      console.error(error);
+    gorrilaRes.on('end', () => {
+      res.send(data)
     });
+  });
 
-    gorrilaReq.end();
-  }
-);
+  gorrilaReq.on('error', (error) => {
+    console.error(error);
+  });
+
+  gorrilaReq.end();
+});
+
+wss.on('connection', (ws) => {
+  ws.send(JSON.stringify(ipAddresses));
+});
