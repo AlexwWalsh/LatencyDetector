@@ -49,7 +49,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error encoding JSON:", err)
 	}
-	resp, err := http.Post("http://localhost:3000/server", "application/json", bytes.NewBuffer(b))
+	resp, err := http.Post("http://192.168.56.1:3000/server", "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		log.Fatal(err)
 	}
