@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"strings"
 
 	// "strings"
 
@@ -43,13 +44,40 @@ func main() {
 	// Print a message to indicate that the server is listening
 	log.Println("Server listening on port 8080")
 
-	data := Address{IpAddress: "168.192.18.1"}
+	// ifaces, err := net.Interfaces()
+	// if err != nil {
+	// 	fmt.Println("Error getting addresses: ", err)
+	// 	return
+	// }
+
+	// for _, i := range ifaces {
+	// 	addrs, err := i.Addrs()
+	// 	if err != nil {
+	// 		fmt.Println("Error getting addresses: ", err)
+	// 		return
+	// 	}
+
+	// 	for _, addr := range addrs {
+	// 		var ip net.IP
+	// 		switch v := addr.(type) {
+	// 		case *net.IPNet:
+	// 			ip = v.IP
+	// 			fmt.Println("IP Address: ", ip)
+	// 		case *net.IPAddr:
+	// 			ip = v.IP
+	// 			fmt.Println("IP Address: ", ip)
+	// 		}
+	// 		fmt.Println("IP Address: ", ip)
+	// 	}
+	// }
+
+	data := Address{IpAddress: "192.168.1.216"}
 	b, err := json.Marshal(data)
 	log.Println(b)
 	if err != nil {
 		log.Fatal("Error encoding JSON:", err)
 	}
-	resp, err := http.Post("http://192.168.56.1:3000/server", "application/json", bytes.NewBuffer(b))
+	resp, err := http.Post("http://192.168.1.225:3000/server", "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,7 +94,7 @@ func main() {
 
 	// Print the response body
 	fmt.Println(string(body))
-	http.ListenAndServe(":8080", router)
+	http.ListenAndServe("192.168.1.216:8080", router)
 
 }
 
@@ -111,34 +139,33 @@ func runPackage() (string, error) {
 func prepareResponse() Node {
 	// var nodes []Node
 
-	// output, err := runPackage()
+	output, err := runPackage()
 
-	// if err != nil {
-	// 	fmt.Println("Error:", err)
-	// }
-	// //Ingress is always the first number
-	// //Egress is always the second number
-	// //Timing is set to finish counting loop in the same second, but wait a extra second to output egressing so we can tell
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	//Ingress is always the first number
+	//Egress is always the second number
+	//Timing is set to finish counting loop in the same second, but wait a extra second to output egressing so we can tell
 
-	// var outputString = string(output)
-	// splitString := strings.Split(outputString, " ,\n")
+	var outputString = string(output)
+	splitString := strings.Split(outputString, " ,\n")
 
-	// ingressCount := splitString[0]
-	// egressCount := splitString[1]
-	// fmt.Println("Ingress:", ingressCount)
-	// fmt.Println("Egress:", egressCount)
+	ingressCount := splitString[0]
+	egressCount := splitString[1]
+	fmt.Println("Ingress:", ingressCount)
+	fmt.Println("Egress:", egressCount)
 
 	// var i int
 	// i = 1
 	var node Node
-	// node.Id = i
-	// node.Ingressing = ingressCount
-	// node.Egressing = egressCount
-	// nodes = append(nodes, node)
+	node.Id = "1"
+	node.Ingressing = ingressCount
+	node.Egressing = egressCount
 
-	node.Id = "2"
-	node.Ingressing = "123"
-	node.Egressing = "6543"
+	// node.Id = "3"
+	// node.Ingressing = "123"
+	// node.Egressing = "6543"
 	// nodes = append(nodes, node)
 
 	// node.Id = 3
