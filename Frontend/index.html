@@ -1,39 +1,103 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-        <script>
-          $(document).ready(function(){
-            $("button").click(function(){
-                $.get("http://localhost:3000/grabMuxInfo", function(data, status){
-                    var dataObject = JSON.parse(data); //JSONify the string response from node.js server
-                    var objectCount = Object.keys(dataObject.nodes).length; //grab the number of objects in the data response
-                    // console.log(dataObject.nodes[0].id);
 
-                    for (let i = 0; i < objectCount; i++) {
-                        let idField = `<h5>Node Id: ${dataObject.nodes[i].id}</h5>`;
-                        let ingressingField = `<h4><strong>Packets Ingressing:</strong> ${dataObject.nodes[i].ingressing}</h4>`;
-                        let egressingField = `<h4><strong>Packets Egressing: </strong>${dataObject.nodes[i].egressing}</h4>`;
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script>
+        //Change the below IP address to either localhost (if not working with the VMs), or your machines IPv4 IP address if working with the VMs
+        const ws = new WebSocket('ws://192.168.1.225:5000');
+        ws.onopen = function (event) {
+            ws.send('WebSocket connection successfully opened');
+        };
 
-                        let node = document.createElement('div');
-                        node.classList.add('node');
-                        node.innerHTML += idField + ingressingField + egressingField;
-                        document.getElementById('content').appendChild(node);
-                    }
+        var oldList = [];
+
+        function getMissingElements(newList) {
+            console.log("oldList: ", oldList);
+            console.log("newList: ", newList);
+            let missingElements = newList.filter(item => {
+                // Check if the item is not present in the second array
+                return !oldList.some(otherItem => {
+                    // Compare the items by their properties (assuming the properties have string values)
+                    return JSON.stringify(item) === JSON.stringify(otherItem);
                 });
             });
-        });
-        </script>
-    </head>
-    <body>
-        <div id="content" class="node-container">
-            <h2>List Data from Mux Server:</h2>
-          </div>
-          
-        <div id="mind-map"></div>
-        <button>Request data from Go localhost 3000 endpoint (Node.js), which requests from 8080 endpoint (Go)</button>
-        <script src="https://d3js.org/d3.v6.min.js"></script>
-        <script src="Front-end.js"></script>
-    </body>
-    
+            // let missingElements = newList.filter((el) => !oldList.includes(el));
+            oldList = newList;
+            console.log("Missing elements:", missingElements)
+            return missingElements;
+        }
+
+        ws.onmessage = function (event) {
+            var response = JSON.parse(event.data);
+            // var objectCount = Object.keys(response).length;
+
+            if (response == undefined) {
+                console.log("No elements in array yet");
+            } else {
+                var elementsToAdd = getMissingElements(response);
+                var objectCount = Object.keys(elementsToAdd).length;
+
+                for (let i = 0; i < objectCount; i++) {
+                    let idField = `<h5>Node Id: ${elementsToAdd[i].IpAddress}</h5>`;
+                    let ingressingField = `<h4 id="a${elementsToAdd[i].IpAddress}1"><strong>Packets Ingressing:</strong></h4>`;
+                    let egressingField = `<h4 id="b${elementsToAdd[i].IpAddress}2"><strong>Packets Egressing: </strong></h4>`;
+                    let button = `<button>Count Packet</button>`;
+                    let node = document.createElement("div");
+                    node.classList.add("node");
+                    node.innerHTML += idField + ingressingField + egressingField + button;
+                    document.getElementById("content").appendChild(node);
+
+                    // add event listener to button
+                    let button2 = node.querySelector("button");
+                    button2.addEventListener("click", function () {
+                        fetch(`http://192.168.1.225:3000/grabMuxInfo/${elementsToAdd[i].IpAddress}`)
+                            .then((response) => {
+                                return response.json(); // parse response as JSON
+                            })
+                            .then((data) => {
+                                console.log(data)
+                                let ingressingElement = document.getElementById(
+                                    `a${elementsToAdd[i].IpAddress}1`
+                                );
+                                ingressingElement.textContent = `Packets Ingressing: ${data.node.ingressing}`;
+
+                                let egressingElement = document.getElementById(
+                                    `b${elementsToAdd[i].IpAddress}2`
+                                );
+                                egressingElement.textContent = `Packets Egressing: ${data.node.egressing}`;
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                            });
+                    });
+                    
+                //     $("button2").click(function(){
+                //     $.get("http://localhost:3000/grabMuxInfo", function(data, status){
+                //         var dataObject = JSON.parse(data); //JSONify the string response from node.js server
+                //         var objectCount = Object.keys(dataObject.nodes).length; //grab the number of objects in the data response
+                //         console.log(dataObject);
+
+
+                //     });
+                // });
+                    
+                }
+            }
+        };
+
+
+    </script>
+</head>
+
+<body>
+    <div id="content" class="node-container">
+        <h2>List Data from Mux Server:</h2>
+    </div>
+
+    <div id="mind-map"></div>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="Front-end.js"></script>
+</body>
+
 </html>

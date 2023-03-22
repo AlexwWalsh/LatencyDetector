@@ -4,22 +4,29 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os/exec"
 	"strings"
 
+	// "strings"
+
 	"github.com/gorilla/mux"
 )
 
 type Response struct {
-	Nodes []Node `json:"nodes"`
+	Node `json:"node"`
 }
 
 type Node struct {
-	Id         int    `json:"id"`
+	Id         string `json:"id"`
 	Ingressing string `json:"ingressing"`
 	Egressing  string `json:"egressing"`
+}
+
+type Address struct {
+	IpAddress string `json:"IpAddress"`
 }
 
 func main() {
@@ -33,7 +40,71 @@ func main() {
 	http.Handle("/", router)
 
 	//start and listen to requests
+
+	// Print a message to indicate that the server is listening
+	log.Println("Server listening on port 8080")
+
+	// ifaces, err := net.Interfaces()
+	// if err != nil {
+	// 	fmt.Println("Error getting addresses: ", err)
+	// 	return
+	// }
+
+	// for _, i := range ifaces {
+	// 	addrs, err := i.Addrs()
+	// 	if err != nil {
+	// 		fmt.Println("Error getting addresses: ", err)
+	// 		return
+	// 	}
+
+	// 	for _, addr := range addrs {
+	// 		var ip net.IP
+	// 		switch v := addr.(type) {
+	// 		case *net.IPNet:
+	// 			ip = v.IP
+	// 			fmt.Println("IP Address: ", ip)
+	// 		case *net.IPAddr:
+	// 			ip = v.IP
+	// 			fmt.Println("IP Address: ", ip)
+	// 		}
+	// 		fmt.Println("IP Address: ", ip)
+	// 	}
+	// }
+
+	data := Address{IpAddress: "192.168.1.216"}
+	b, err := json.Marshal(data)
+	log.Println(b)
+	if err != nil {
+		log.Fatal("Error encoding JSON:", err)
+	}
+
+	//Change the below IP address to either localhost (if not working with the VMs), or the machine's IP address that is running the Node Server
+	//Example alternative:
+	//resp, err := http.Post("http://192.168.1.225:3000/server", "application/json", bytes.NewBuffer(b))
+	resp, err := http.Post("http://localhost:3000/server", "application/json", bytes.NewBuffer(b))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print the response body
+	fmt.Println(string(body))
+
+	// Print the response body
+	fmt.Println(string(body))
+	//start and listen to requests
+	//Change this IP address if running on the VM to that machine's IPv4 address
+	//Example alternative:
+	//http.ListenAndServe("168.192.18.1:8080", router)
 	http.ListenAndServe(":8080", router)
+	log.Println("Server listening on port 8080")
+
 }
 
 func serverCheck(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +118,7 @@ func Data(w http.ResponseWriter, r *http.Request) {
 	var response Response
 	nodes := prepareResponse()
 
-	response.Nodes = nodes
+	response.Node = nodes
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -74,8 +145,8 @@ func runPackage() (string, error) {
 	return output, nil
 }
 
-func prepareResponse() []Node {
-	var nodes []Node
+func prepareResponse() Node {
+	// var nodes []Node
 
 	output, err := runPackage()
 
@@ -94,15 +165,14 @@ func prepareResponse() []Node {
 	fmt.Println("Ingress:", ingressCount)
 	fmt.Println("Egress:", egressCount)
 
-	var i int
-	i = 1
+	// var i int
+	// i = 1
 	var node Node
-	node.Id = i
+	node.Id = "1"
 	node.Ingressing = ingressCount
 	node.Egressing = egressCount
-	nodes = append(nodes, node)
 
-	// node.Id = 2
+	// node.Id = "3"
 	// node.Ingressing = "123"
 	// node.Egressing = "6543"
 	// nodes = append(nodes, node)
@@ -111,5 +181,5 @@ func prepareResponse() []Node {
 	// node.Ingressing = "4567"
 	// node.Egressing = "398"
 	// nodes = append(nodes, node)
-	return nodes
+	return node
 }
