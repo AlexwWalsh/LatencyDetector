@@ -39,9 +39,39 @@ func main() {
 	router.HandleFunc("/data", Data).Methods("GET")
 	http.Handle("/", router)
 
-	//Change the below IP address to the one that belongs to the VM you are running the Agent on
-	//Have to do it manually until I figure out dynamic version - AW
-	data := Address{IpAddress: "168.192.18.1"}
+	//start and listen to requests
+
+	// Print a message to indicate that the server is listening
+	log.Println("Server listening on port 8080")
+
+	// ifaces, err := net.Interfaces()
+	// if err != nil {
+	// 	fmt.Println("Error getting addresses: ", err)
+	// 	return
+	// }
+
+	// for _, i := range ifaces {
+	// 	addrs, err := i.Addrs()
+	// 	if err != nil {
+	// 		fmt.Println("Error getting addresses: ", err)
+	// 		return
+	// 	}
+
+	// 	for _, addr := range addrs {
+	// 		var ip net.IP
+	// 		switch v := addr.(type) {
+	// 		case *net.IPNet:
+	// 			ip = v.IP
+	// 			fmt.Println("IP Address: ", ip)
+	// 		case *net.IPAddr:
+	// 			ip = v.IP
+	// 			fmt.Println("IP Address: ", ip)
+	// 		}
+	// 		fmt.Println("IP Address: ", ip)
+	// 	}
+	// }
+
+	data := Address{IpAddress: "192.168.1.216"}
 	b, err := json.Marshal(data)
 	log.Println(b)
 	if err != nil {
@@ -141,9 +171,8 @@ func prepareResponse() Node {
 	node.Id = "1"
 	node.Ingressing = ingressCount
 	node.Egressing = egressCount
-	// nodes = append(nodes, node)
 
-	// node.Id = "2"
+	// node.Id = "3"
 	// node.Ingressing = "123"
 	// node.Egressing = "6543"
 	// nodes = append(nodes, node)
