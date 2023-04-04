@@ -1,26 +1,136 @@
+ body{
+  background-color: #35393e;
+  margin: 0;
 
-button, h2{
-    display: block;
-    margin: 0 auto;
+ }
+ nav{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     text-align: center;
+    color: #0a8ad2;
+    background-color: black;  
 };
-
-.node-container {
+.node-container{
     display: flex;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     margin-top: 20px;
+
   }
   
   .node {
     display: inline-block;
     padding: 5px;  
-    border: 1px solid black;
-    margin: 5px;
+    border: 3px solid #0060ae;
+    margin-top:125px;
+    margin-bottom: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
     border-radius: 5px;
-    background-color: yellow;
+    background-color: #d3d3d3;
     width: auto;
     align-items: center;
+    font-family: palatino, serif;
+    font-size: 20px;
+    color: #0a8ad2;
+    -webkit-text-stroke: 0.8px black;
   }
+
+  .change{
+    width: 150px;
+    height: auto;
+    position: absolute;
+    margin-top: -5px;
+  }
+
+  ul{
+    margin-top: -40px;
+    margin-left: 950px;
+    margin-right: 20px;
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 30px;
+  }
+  .list{
+    color: #0a8ad2;
+  }
+  .list:hover{
+    color: #60ab31;
+  }
+
+  button {
+    position: relative;
+    padding: 15px 5px;
+    display: block;
+    text-decoration: none;
+    text-transform: uppercase;
+    overflow: hidden;
+    border-radius: 40px;
+    font-family: Lato;
+    font-size: 8px;
+    border: none;
+    margin: 0 auto;
+   }
+   
+   button span {
+    position: relative;
+    color: #fff;
+    font-family: Arial;
+    letter-spacing: 4px;
+    z-index: 1;
+   }
+   
+   button .liquid {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: #0060ae
+    ;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, .5);
+    transition: .5s;
+   }
+   
+   button .liquid::after,
+   button .liquid::before {
+    content: '';
+    width: 200%;
+    height: 200%;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -75%);
+    background: #fff;
+   }
+   
+   button .liquid::before {
+    border-radius: 45%;
+    background: rgba(20, 20, 20, 1);
+    animation: animate 5s linear infinite;
+   }
+   
+   button .liquid::after {
+    border-radius: 40%;
+    background: rgba(20, 20, 20, .5);
+    animation: animate 10s linear infinite;
+   }
+   
+   button:hover .liquid {
+    top: -120px;
+   }
+   
+   @keyframes animate {
+    0% {
+     transform: translate(-50%, -75%) rotate(0deg);
+    }
+   
+    100% {
+     transform: translate(-50%, -75%) rotate(360deg);
+    }
+   }
   

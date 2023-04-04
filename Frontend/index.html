@@ -5,7 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script>
         //Change the below IP address to either localhost (if not working with the VMs), or your machines IPv4 IP address if working with the VMs
-        const ws = new WebSocket('ws://192.168.1.225:5000');
+        const ws = new WebSocket('ws://localhost:5000');
         ws.onopen = function (event) {
             ws.send('WebSocket connection successfully opened');
         };
@@ -40,9 +40,10 @@
 
                 for (let i = 0; i < objectCount; i++) {
                     let idField = `<h5>Node Id: ${elementsToAdd[i].IpAddress}</h5>`;
-                    let ingressingField = `<h4 id="a${elementsToAdd[i].IpAddress}1"><strong>Packets Ingressing:</strong></h4>`;
-                    let egressingField = `<h4 id="b${elementsToAdd[i].IpAddress}2"><strong>Packets Egressing: </strong></h4>`;
-                    let button = `<button>Count Packet</button>`;
+                    let ingressingField = `<h4 id="a${elementsToAdd[i].IpAddress}1"><strong>Packets Ingressing:</strong></h4>`;// add it so that loading pops up as well for the ignressing/egressing
+                    let egressingField = `<h4 id="b${elementsToAdd[i].IpAddress}2"><strong>Packets Egressing: </strong></h4>`;// add it so that loading pops up as well for the ignressing/egressing
+                    let button = `<button class="request"><span><a>Count Packet</a></span>
+  <div class="liquid"></div></button>`;//change button here for classes for laoding animation
                     let node = document.createElement("div");
                     node.classList.add("node");
                     node.innerHTML += idField + ingressingField + egressingField + button;
@@ -51,7 +52,7 @@
                     // add event listener to button
                     let button2 = node.querySelector("button");
                     button2.addEventListener("click", function () {
-                        fetch(`http://192.168.1.225:3000/grabMuxInfo/${elementsToAdd[i].IpAddress}`)
+                        fetch(`http://localhost:3000/grabMuxInfo/${elementsToAdd[i].IpAddress}`)
                             .then((response) => {
                                 return response.json(); // parse response as JSON
                             })
@@ -88,16 +89,39 @@
 
 
     </script>
+
+
 </head>
 
 <body>
-    <div id="content" class="node-container">
-        <h2>List Data from Mux Server:</h2>
-    </div>
+    <header>
+        <nav>
+            <div>
+                <h2>Latency Detector</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a class="list"  href="index.html">Home</a></li>
+                <li><a class="list"  href="about_us.html">About us</a></li>
+                <li><a class="list"  href="Abstract.html">Abstract</a></li>
+            </ul>
+        </nav>
+        <img src="https://e6weh2v6enq.exactdn.com/wp-content/uploads/2023/01/viasat.png?strip=all&lossy=1&ssl=1" alt="Viasat Logo" class="change">
+
+    </header>
+
+
+
+    <div id="content" class="node-container"></div>
 
     <div id="mind-map"></div>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="Front-end.js"></script>
+
+    <footer>
+        <div class="footer">
+
+        </div>
+    </footer>
 </body>
 
 </html>
