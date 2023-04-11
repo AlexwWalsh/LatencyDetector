@@ -39,11 +39,24 @@
                 var objectCount = Object.keys(elementsToAdd).length;
 
                 for (let i = 0; i < objectCount; i++) {
+
                     let idField = `<h5>Node Id: ${elementsToAdd[i].IpAddress}</h5>`;
+                    //these fields are for counting packets button in pop up 
                     let ingressingField = `<h4 id="a${elementsToAdd[i].IpAddress}1"><strong>Packets Ingressing:</strong></h4>`;// add it so that loading pops up as well for the ignressing/egressing
                     let egressingField = `<h4 id="b${elementsToAdd[i].IpAddress}2"><strong>Packets Egressing: </strong></h4>`;// add it so that loading pops up as well for the ignressing/egressing
                     let button = `<button class="request"><span><a>Count Packet</a></span><div class="liquid"></div></button>`;//change button here for classes for loading animation
+                    //these fields are for count protocals button
+                    let Protocal = '<h4 id ="c${elementsToAdd[i].IpAddress}3"><strong>Pick Type Of Packet: </strong></h4>'; //allows for user to pick the type of packet they want  
+                    let TCP = '<h4 id ="d${elementsToAdd[i].IpAddress}4"><strong>TCP packets: </strong></h4>'//TCP packet field     
+                    let UDP = '<h4 id ="e${elementsToAdd[i].IpAddress}5"><strong>UDP packets: </strong></h4>'//UDP packet field   
+                    let ICMP = '<h4 id ="f${elementsToAdd[i].IpAddress}6"><strong>ICMP packets: </strong></h4>'//ICMP packet field                     
+                    let Protocal_button = `<button class="request"><span><a>Protocal Count</a></span><div class="liquid"></div></button>`;//change button here for protocal count
+                    // these are for packet Delays button
+                    let Delay = '<h4 id ="g${elementsToAdd[i].IpAddress}7"><strong>Delay in msec: </strong></h4>' //changes to delay field in packet delay
+                    let Delay_button = `<button class="request"><span><a>Packet Delay</a></span><div class="liquid"></div></button>`;//change button here for delay of packet  
+                    
                     let node = document.createElement("div");
+                    
                     node.classList.add("node");
                     node.innerHTML += idField;
                     node.addEventListener("click", function () {
@@ -53,7 +66,8 @@
                     // appropriate functionality when clicked.
                     let modal = document.createElement("div");
                     modal.classList.add("modal");
-                    modal.innerHTML = "<h4>Select an option</h4>" +
+                    modal.innerHTML = "<span class='close-button'>x</span>" +
+                    "<h4>Select an option</h4>" +
                     "<button id='count-packets'>Count Packets</button>" +
                     "<button id='count-protocols'>Count Protocols</button>" +
                     "<button id='packet-delays'>Packet Delays</button>";
@@ -61,63 +75,112 @@
                         // Position the pop-up to the right of the node
                         modal.style.top = node.offsetTop + 'px';
                         modal.style.left = (node.offsetLeft + node.offsetWidth) + 'px';
-                    document.body.appendChild(modal);
+                      document.body.appendChild(modal);
 
+                    function resetNode(){//use this fucntion to reset the node
+                        node.innerHTML = idField;
+                    }
+
+                      let closeButton = document.querySelector(".close-button")
+                         // Add a click event listener to the close button
+                        closeButton.addEventListener("click", function() {
+                             modal.remove(); // Remove the modal from the DOM
+                            //resetNode();//reset the node to just its original state 
+                        });
+
+                    //this fucntion/button countPacketsBtn is the button for counting packets 
+                    let alreadyExecuted1 = false;//flag this variable to track if user pressed the button once already
                     let countPacketsBtn = document.getElementById("count-packets");
                     countPacketsBtn.addEventListener("click", function () {
+                    if(!alreadyExecuted1){// this is only to execute if the button hasnt already been clicked
+                    resetNode();//reset the node
+                    node.innerHTML += ingressingField + egressingField + button;
                     // Execute functionality for counting packets
-                    //..
-                    });
-
-                    let countProtocolsBtn = document.getElementById("count-protocols");
-                    countProtocolsBtn.addEventListener("click", function () {
-                    // Execute functionality for counting protocols
-                    // ...
-                    });
-
-                    let packetDelaysBtn = document.getElementById("packet-delays");
-                    packetDelaysBtn.addEventListener("click", function () {
-                    // Execute functionality for packet delays
-                    // ...
-                    });
-                    });
-                    document.getElementById("content").appendChild(node);
-
                     // add event listener to button
                     let button2 = node.querySelector("button");
                     button2.addEventListener("click", function () {
                         fetch(`http://localhost:3000/grabMuxInfo/${elementsToAdd[i].IpAddress}`)
-                            .then((response) => {
-                                return response.json(); // parse response as JSON
-                            })
-                            .then((data) => {
+                         .then((response) => {
+                              return response.json(); // parse response as JSON
+                         })
+                         .then((data) => {
                                 console.log(data)
                                 let ingressingElement = document.getElementById(
                                     `a${elementsToAdd[i].IpAddress}1`
-                                );
-                                ingressingElement.textContent = `Packets Ingressing: ${data.node.ingressing}`;
+                             );
+                             ingressingElement.textContent = `Packets Ingressing: ${data.node.ingressing}`;
 
-                                let egressingElement = document.getElementById(
-                                    `b${elementsToAdd[i].IpAddress}2`
-                                );
-                                egressingElement.textContent = `Packets Egressing: ${data.node.egressing}`;
-                            })
-                            .catch((error) => {
+                             let egressingElement = document.getElementById(
+                                 `b${elementsToAdd[i].IpAddress}2`
+                             );
+                             egressingElement.textContent = `Packets Egressing: ${data.node.egressing}`;
+                         })
+                         .catch((error) => {
                                 console.error(error);
-                            });
-                    });
+                             });
+                        });
+                            alreadyExecuted1 = false//set the flag variable to true so we know the button has already been clicked 
+                    }
+                }); 
+                let alreadyExecuted2 = false;//flag this variable to track if user pressed the button once already
+                let countProtocolsBtn = document.getElementById("count-protocols");
+                    countProtocolsBtn.addEventListener("click", function () {
+                    // Execute functionality for counting protocols
+                    if(!alreadyExecuted2){// this is only to execute if the button hasnt already been clicked
+                        resetNode();//reset the node
+                        node.innerHTML +=  Protocal + TCP + UDP + ICMP + Protocal_button;// display fields when count protocals is clicked
+                            alreadyExecuted2 = true//set the flag variable to true so we know the button has already been clicked 
+                    }
+                });
+                let alreadyExecuted3 = false;//flag this variable to track if user pressed the button once already
+                    let packetDelaysBtn = document.getElementById("packet-delays");
+                    packetDelaysBtn.addEventListener("click", function () {
+                    // Execute functionality for packet delays
+                    if(!alreadyExecuted3){// this is only to execute if the button hasnt already been clicked
+                        resetNode();//reset the node
+                        node.innerHTML +=  Delay + Delay_button;// display fields when count protocals is clicked
+                            alreadyExecuted3 = true//set the flag variable to true so we know the button has already been clicked 
+                    }
+                });
+             });
+                document.getElementById("content").appendChild(node);
+
+                    
+            // // add event listener to button
+            // let button2 = node.querySelector("button");
+            // button2.addEventListener("click", function () {
+            //     fetch(`http://localhost:3000/grabMuxInfo/${elementsToAdd[i].IpAddress}`)
+            //         .then((response) => {
+            //             return response.json(); // parse response as JSON
+            //         })
+            //         .then((data) => {
+            //             console.log(data)
+            //             let ingressingElement = document.getElementById(
+            //                 `a${elementsToAdd[i].IpAddress}1`
+            //             );
+            //             ingressingElement.textContent = `Packets Ingressing: ${data.node.ingressing}`;
+
+            //             let egressingElement = document.getElementById(
+            //                 `b${elementsToAdd[i].IpAddress}2`
+            //             );
+            //             egressingElement.textContent = `Packets Egressing: ${data.node.egressing}`;
+            //         })
+            //         .catch((error) => {
+            //             console.error(error);
+            //         });
+            // });*/
                 
                 
                     
-                //     $("button2").click(function(){
-                //     $.get("http://localhost:3000/grabMuxInfo", function(data, status){
-                //         var dataObject = JSON.parse(data); //JSONify the string response from node.js server
-                //         var objectCount = Object.keys(dataObject.nodes).length; //grab the number of objects in the data response
-                //         console.log(dataObject);
+            //     //     $("button2").click(function(){
+            //     //     $.get("http://localhost:3000/grabMuxInfo", function(data, status){
+            //     //         var dataObject = JSON.parse(data); //JSONify the string response from node.js server
+            //     //         var objectCount = Object.keys(dataObject.nodes).length; //grab the number of objects in the data response
+            //     //         console.log(dataObject);
 
 
-                //     });
-                // });
+            //     //     });
+            //     // });
                     
                 }
             }

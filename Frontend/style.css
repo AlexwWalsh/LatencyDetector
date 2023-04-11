@@ -48,24 +48,36 @@
   align-items: center;
   background-color: #d3d3d3;
   border: 2px solid #0060ae;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 3%;
+  border-radius: 4%;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
   z-index: 1;
-  margin-left: 10px;
+  margin-left: 1%;
   width: 15%;
   height: 18%;
-
+}
+.close-button {
+  position: absolute;
+  top: 1%;
+  right: 3%;
+  font-size: 20px;
+  font-weight: bold;
+  color: #0060ae;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
 }
 
 .modal button {
-  margin: 10px 0;
-  padding: 7%;
+  margin: 2% 0;
+  padding: 12%;
+  padding-top: 4%;
   border: none;
   border-radius: 5%;
   background-color: #0060ae;
   color: white;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   align-items: center;
 }
@@ -77,7 +89,7 @@ h4{
   -webkit-text-stroke: 0.8px black;
 }
 .modal button:hover {
-  background-color: #0a8ad2;
+  background-color: #60ab31;
 }
 
 .modal::before {
@@ -204,7 +216,7 @@ h4{
     overflow: hidden;
     border-radius: 40px;
     font-family: Lato;
-    font-size: 8px;
+    font-size: 10px;
     border: none;
     margin: 0 auto;
    }
