@@ -77,7 +77,16 @@
                         modal.style.left = (node.offsetLeft + node.offsetWidth) + 'px';
                       document.body.appendChild(modal);
 
-                    function resetNode(){//use this fucntion to reset the node
+                    // function resetNode(){//use this fucntion to reset the node
+                    //     let modal = document.querySelector('.modal');
+                    //         if (modal) {
+                    //             //node.innerHTML = idField;
+                    //             modal.remove(); // Remove the modal from the DOM
+                    //         }
+                                
+                    //             node.innerHTML = idField;
+                    //      }
+                    function resetNode(){
                         node.innerHTML = idField;
                     }
 
@@ -85,14 +94,17 @@
                          // Add a click event listener to the close button
                         closeButton.addEventListener("click", function() {
                              modal.remove(); // Remove the modal from the DOM
-                            //resetNode();//reset the node to just its original state 
+                             //resetNode();//reset the node to just its original state 
+                            // alreadyExecuted1 = false; // Reset the flag variables
+                            // alreadyExecuted2 = false;
+                            // alreadyExecuted3 = false;
                         });
 
                     //this fucntion/button countPacketsBtn is the button for counting packets 
-                    let alreadyExecuted1 = false;//flag this variable to track if user pressed the button once already
+                   // let alreadyExecuted1 = false;//flag this variable to track if user pressed the button once already
                     let countPacketsBtn = document.getElementById("count-packets");
                     countPacketsBtn.addEventListener("click", function () {
-                    if(!alreadyExecuted1){// this is only to execute if the button hasnt already been clicked
+                    //if(!alreadyExecuted1){// this is only to execute if the button hasnt already been clicked
                     resetNode();//reset the node
                     node.innerHTML += ingressingField + egressingField + button;
                     // Execute functionality for counting packets
@@ -119,28 +131,28 @@
                                 console.error(error);
                              });
                         });
-                            alreadyExecuted1 = false//set the flag variable to true so we know the button has already been clicked 
-                    }
+                           // alreadyExecuted1 = false//set the flag variable to true so we know the button has already been clicked 
+                    //}
                 }); 
-                let alreadyExecuted2 = false;//flag this variable to track if user pressed the button once already
+                //let alreadyExecuted2 = false;//flag this variable to track if user pressed the button once already
                 let countProtocolsBtn = document.getElementById("count-protocols");
                     countProtocolsBtn.addEventListener("click", function () {
                     // Execute functionality for counting protocols
-                    if(!alreadyExecuted2){// this is only to execute if the button hasnt already been clicked
+                   // if(!alreadyExecuted2){// this is only to execute if the button hasnt already been clicked
                         resetNode();//reset the node
                         node.innerHTML +=  Protocal + TCP + UDP + ICMP + Protocal_button;// display fields when count protocals is clicked
-                            alreadyExecuted2 = true//set the flag variable to true so we know the button has already been clicked 
-                    }
+                            //alreadyExecuted2 = true//set the flag variable to true so we know the button has already been clicked 
+                   // }
                 });
-                let alreadyExecuted3 = false;//flag this variable to track if user pressed the button once already
+                //let alreadyExecuted3 = false;//flag this variable to track if user pressed the button once already
                     let packetDelaysBtn = document.getElementById("packet-delays");
                     packetDelaysBtn.addEventListener("click", function () {
                     // Execute functionality for packet delays
-                    if(!alreadyExecuted3){// this is only to execute if the button hasnt already been clicked
+                    //if(!alreadyExecuted3){// this is only to execute if the button hasnt already been clicked
                         resetNode();//reset the node
                         node.innerHTML +=  Delay + Delay_button;// display fields when count protocals is clicked
-                            alreadyExecuted3 = true//set the flag variable to true so we know the button has already been clicked 
-                    }
+                            //alreadyExecuted3 = true//set the flag variable to true so we know the button has already been clicked 
+                    //}
                 });
              });
                 document.getElementById("content").appendChild(node);
