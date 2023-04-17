@@ -48,7 +48,7 @@
   align-items: center;
   background-color: #d3d3d3;
   border: 2px solid #0060ae;
-  padding: 3%;
+  padding: 1%;
   border-radius: 4%;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
   z-index: 1;
@@ -80,6 +80,27 @@
   font-size: 12px;
   cursor: pointer;
   align-items: center;
+}
+
+#count-packets{
+  padding-left: 8%;
+  padding-right: 8%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+#count-protocols{
+  padding-left: 3%;
+  padding-right: 3%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+
+}
+#packet-delays{
+  padding-left: 9.5%;
+  padding-right: 9.5%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+
 }
 h4{
   align-items: center;
