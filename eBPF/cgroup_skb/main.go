@@ -8,11 +8,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/cilium/ebpf"
+	"github.com/cilium/ebpf/internal"
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/rlimit"
 )
@@ -25,17 +27,8 @@ func main() {
 	go countPacketsEgress()
 	go countPacketsIngress()
 
-	time.Sleep(23 * time.Second)
+	time.Sleep(10 * time.Second)
 }
-
-// func runParallel(){
-// 	result1 := make(chan string)
-// 	result2 := make(chan string)
-
-// 	go func(){
-// 		result1 <-
-// 	}()
-// }
 
 func countPacketsIngress() uint64 {
 	if err := rlimit.RemoveMemlock(); err != nil {
@@ -89,6 +82,7 @@ func countPacketsIngress() uint64 {
 	return 0
 }
 
+// //////////////////////////////////////////////////////////////////////////////////////////
 func countPacketsEgress() uint64 {
 	if err := rlimit.RemoveMemlock(); err != nil {
 		log.Fatal(err)
@@ -120,28 +114,19 @@ func countPacketsEgress() uint64 {
 
 	log.Println("Counting Egressing packets...")
 
-	// Read loop reporting the total amount of times the kernel
-	// function was entered, once per second.
-	// ticker := time.NewTicker(1 * time.Second)
-	var loops = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	var loops = []int{1, 2, 3, 4}
 	var value uint64
 	for range loops {
 
 		if err := objs.PktCount.Lookup(uint32(0), &value); err != nil {
 			log.Fatalf("reading map: %v", err)
 		}
-		// log.Printf("number of packets: %d\n", value)
-		// fmt.Println("number of packets: \n", value)
-		time.Sleep(2 * time.Second)
+		fmt.Println("Egress Packets = ", value)
+		time.Sleep(3 * time.Second)
 
 	}
-	time.Sleep(1 * time.Second)
-	fmt.Println(value)
 	return 0
 }
-
-// detectCgroupPath returns the first-found mount point of type cgroup2
-// and stores it in the cgroupPath global variable.
 func detectCgroupPath() (string, error) {
 	f, err := os.Open("/proc/mounts")
 	if err != nil {
@@ -159,4 +144,10 @@ func detectCgroupPath() (string, error) {
 	}
 
 	return "", errors.New("cgroup2 not mounted")
+}
+
+func intToIP(ipNum uint32) net.IP {
+	ip := make(net.IP, 4)
+	internal.NativeEndian.PutUint32(ip, ipNum)
+	return ip
 }
