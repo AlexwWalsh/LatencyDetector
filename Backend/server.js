@@ -45,13 +45,15 @@ app.post('/server', (req, res) => {
 })
 
 
-app.get('/grabMuxInfo/:IpAddress', (req, res) => {
+app.get('/grabMuxInfo/:IpAddress/:Endpoint', (req, res) => {
   const { IpAddress } = req.params;
+  console.log(req.params.Endpoint)
   // console.log(IpAddress)
   const options = {
-    hostname: IpAddress,
+    // hostname: IpAddress,
+    hostname: "localhost",
     port: 8080,
-    path: '/data',
+    path: '/' + req.params.Endpoint,
     method: 'GET'
   };
 

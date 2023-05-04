@@ -28,15 +28,6 @@ func main() {
 	time.Sleep(23 * time.Second)
 }
 
-// func runParallel(){
-// 	result1 := make(chan string)
-// 	result2 := make(chan string)
-
-// 	go func(){
-// 		result1 <-
-// 	}()
-// }
-
 func countPacketsIngress() uint64 {
 	if err := rlimit.RemoveMemlock(); err != nil {
 		log.Fatal(err)
@@ -70,8 +61,6 @@ func countPacketsIngress() uint64 {
 
 	// Read loop reporting the total amount of times the kernel
 	// function was entered, once per second.
-
-	// ticker := time.NewTicker(1 * time.Second)
 
 	var loops = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	var value uint64
@@ -122,7 +111,6 @@ func countPacketsEgress() uint64 {
 
 	// Read loop reporting the total amount of times the kernel
 	// function was entered, once per second.
-	// ticker := time.NewTicker(1 * time.Second)
 	var loops = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 	var value uint64
 	for range loops {

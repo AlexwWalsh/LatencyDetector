@@ -19,10 +19,22 @@ type Response struct {
 	Node `json:"node"`
 }
 
+type ProtocolResponse struct {
+	ProtocolNode `json:"node"`
+}
+
 type Node struct {
 	Id         string `json:"id"`
 	Ingressing string `json:"ingressing"`
 	Egressing  string `json:"egressing"`
+}
+
+type ProtocolNode struct {
+	Id    string `json:"id"`
+	ICMP  string `json:"icmp"`
+	TCP   string `json:"tcp"`
+	UDP   string `json:"udp"`
+	OTHER string `json:"other"`
 }
 
 type Address struct {
@@ -36,40 +48,14 @@ func main() {
 	log.Println("creating routes")
 	//specify endpoints
 	router.HandleFunc("/server-status", serverCheck).Methods("GET")
-	router.HandleFunc("/data", Data).Methods("GET")
+	router.HandleFunc("/countPackets", countPackets).Methods("GET")
+	router.HandleFunc("/protocols", protocols).Methods("GET")
 	http.Handle("/", router)
 
 	//start and listen to requests
 
 	// Print a message to indicate that the server is listening
 	log.Println("Server listening on port 8080")
-
-	// ifaces, err := net.Interfaces()
-	// if err != nil {
-	// 	fmt.Println("Error getting addresses: ", err)
-	// 	return
-	// }
-
-	// for _, i := range ifaces {
-	// 	addrs, err := i.Addrs()
-	// 	if err != nil {
-	// 		fmt.Println("Error getting addresses: ", err)
-	// 		return
-	// 	}
-
-	// 	for _, addr := range addrs {
-	// 		var ip net.IP
-	// 		switch v := addr.(type) {
-	// 		case *net.IPNet:
-	// 			ip = v.IP
-	// 			fmt.Println("IP Address: ", ip)
-	// 		case *net.IPAddr:
-	// 			ip = v.IP
-	// 			fmt.Println("IP Address: ", ip)
-	// 		}
-	// 		fmt.Println("IP Address: ", ip)
-	// 	}
-	// }
 
 	data := Address{IpAddress: "192.168.1.216"}
 	b, err := json.Marshal(data)
@@ -96,9 +82,6 @@ func main() {
 	// Print the response body
 	fmt.Println(string(body))
 
-	// Print the response body
-	fmt.Println(string(body))
-	//start and listen to requests
 	//Change this IP address if running on the VM to that machine's IPv4 address
 	//Example alternative:
 	//http.ListenAndServe("168.192.18.1:8080", router)
@@ -113,10 +96,10 @@ func serverCheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "API is up and running")
 }
 
-func Data(w http.ResponseWriter, r *http.Request) {
-	log.Println("Successfully entered '/data' endpoint")
+func countPackets(w http.ResponseWriter, r *http.Request) {
+	log.Println("Successfully entered '/countPackets' endpoint")
 	var response Response
-	nodes := prepareResponse()
+	nodes := prepareResponseCount()
 
 	response.Node = nodes
 
@@ -130,7 +113,24 @@ func Data(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
-func runPackage() (string, error) {
+func protocols(w http.ResponseWriter, r *http.Request) {
+	log.Println("Successfully entered '/protocols' endpoint")
+	var response ProtocolResponse
+	nodes := prepareResponseProtocols()
+
+	response.ProtocolNode = nodes
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		return
+	}
+
+	w.Write(jsonResponse)
+}
+
+func runPackageCount() (string, error) {
 	cmd := exec.Command("sudo", "go", "run", "./cgroup_skb")
 
 	var stdout bytes.Buffer
@@ -145,10 +145,25 @@ func runPackage() (string, error) {
 	return output, nil
 }
 
-func prepareResponse() Node {
+func runPackageProtocols() (string, error) {
+	cmd := exec.Command("sudo", "go", "run", "./xdp")
+
+	var stdout bytes.Buffer
+
+	cmd.Stdout = &stdout
+
+	if err := cmd.Run(); err != nil {
+		return "Error running packages: ", err
+	}
+
+	output := stdout.String()
+	return output, nil
+}
+
+func prepareResponseCount() Node {
 	// var nodes []Node
 
-	output, err := runPackage()
+	output, err := runPackageCount()
 
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -172,14 +187,41 @@ func prepareResponse() Node {
 	node.Ingressing = ingressCount
 	node.Egressing = egressCount
 
-	// node.Id = "3"
-	// node.Ingressing = "123"
-	// node.Egressing = "6543"
-	// nodes = append(nodes, node)
-
-	// node.Id = 3
-	// node.Ingressing = "4567"
-	// node.Egressing = "398"
-	// nodes = append(nodes, node)
 	return node
+}
+
+func prepareResponseProtocols() ProtocolNode {
+	// var nodes []Node
+
+	output, err := runPackageProtocols()
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+	//Ingress is always the first number
+	//Egress is always the second number
+	//Timing is set to finish counting loop in the same second, but wait a extra second to output egressing so we can tell
+
+	var outputString = string(output)
+	splitString := strings.Split(outputString, ", ")
+
+	ICMP := splitString[0]
+	TCP := splitString[1]
+	UDP := splitString[2]
+	OTHER := splitString[3]
+	fmt.Println("ICMP:", ICMP)
+	fmt.Println("TCP:", TCP)
+	fmt.Println("UDP:", UDP)
+	fmt.Println("OTHER:", OTHER)
+
+	// var i int
+	// i = 1
+	var protocolNode ProtocolNode
+	protocolNode.Id = "1"
+	protocolNode.ICMP = ICMP
+	protocolNode.TCP = TCP
+	protocolNode.UDP = UDP
+	protocolNode.OTHER = OTHER
+
+	return protocolNode
 }
