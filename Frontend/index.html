@@ -47,12 +47,12 @@
                     let button = `<button class="request"><span><a>Start</a></span><div></div></button>`;//change button here for classes for loading animation
                     //these fields are for count protocals button
                     //let Protocal = '<h4 id ="c${elementsToAdd[i].IpAddress}3"><strong>Pick Type Of Packet: </strong></h4>'; //allows for user to pick the type of packet they want  
-                    let TCP = '<h4 id ="d${elementsToAdd[i].IpAddress}4"><strong>TCP packets: </strong></h4>'//TCP packet field     
-                    let UDP = '<h4 id ="e${elementsToAdd[i].IpAddress}5"><strong>UDP packets: </strong></h4>'//UDP packet field   
-                    let ICMP = '<h4 id ="f${elementsToAdd[i].IpAddress}6"><strong>ICMP packets: </strong></h4>'//ICMP packet field                     
+                    let TCP = `<h4 id ="d${elementsToAdd[i].IpAddress}4"><strong>TCP packets: </strong></h4>`//TCP packet field     
+                    let UDP = `<h4 id ="e${elementsToAdd[i].IpAddress}5"><strong>UDP packets: </strong></h4>`//UDP packet field   
+                    let ICMP = `<h4 id ="f${elementsToAdd[i].IpAddress}6"><strong>ICMP packets: </strong></h4>`//ICMP packet field                     
                     let Protocal_button = `<button class="request"><span><a>start</a></span><div></div></button>`;//change button here for protocal count
                     // these are for packet Delays button
-                    let Delay = '<h4 id ="g${elementsToAdd[i].IpAddress}7"><strong>Delay in msec: </strong></h4>' //changes to delay field in packet delay
+                    let Delay = `<h4 id ="g${elementsToAdd[i].IpAddress}7"><strong>Delay in msec: </strong></h4>` //changes to delay field in packet delay
                     let Delay_button = `<button class="request"><span><a>Start</a></span><div></div></button>`;//change button here for delay of packet  
 
                     let node = document.createElement("div");
@@ -153,6 +153,34 @@
                                     case "packet-delays":
                                         resetNode();//reset the node
                                         node.innerHTML += Delay + Delay_button;// display fields when count protocals is clicked
+                                        let button4 = node.querySelector("button");
+                                        button4.addEventListener("click", function () {
+                                            fetch(`http://localhost:3000/grabMuxInfo/${elementsToAdd[i].IpAddress}/packetDelay`)
+                                                .then((response) => {
+                                                    return response.json(); // parse response as JSON
+                                                })
+                                                .then((data) => {
+                                                    console.log(data)
+                                                    let delayElement = document.getElementById(`g${elementsToAdd[i].IpAddress}7`);
+
+                                                    node.style.transition = "background-color 1s ease-in-out";
+
+                                                    if (data.node.Delay > 700) {
+                                                        node.style.backgroundColor = "lightred";
+                                                    } else if (data.node.Delay >= 150 && data.node.Delay <= 700) {
+                                                        node.style.backgroundColor = "lightyellow";
+                                                    } else {
+                                                        node.style.backgroundColor = "lightgreen";
+                                                    }
+
+                                                    // Animate the transition of the background color
+                                                    
+                                                    delayElement.textContent = `Delay(ms): ${data.node.Delay}`;
+                                                })
+                                                .catch((error) => {
+                                                    console.error(error);
+                                                });
+                                        });
                                         break;
                                     default:
                                         console.error("Invalid button id:" + btn.id);

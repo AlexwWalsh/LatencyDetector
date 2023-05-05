@@ -23,6 +23,10 @@ type ProtocolResponse struct {
 	ProtocolNode `json:"node"`
 }
 
+type DelayResponse struct {
+	DelayNode `json:"node"`
+}
+
 type Node struct {
 	Id         string `json:"id"`
 	Ingressing string `json:"ingressing"`
@@ -35,6 +39,11 @@ type ProtocolNode struct {
 	TCP   string `json:"tcp"`
 	UDP   string `json:"udp"`
 	OTHER string `json:"other"`
+}
+
+type DelayNode struct {
+	Id    string `json:"id"`
+	Delay string `json:"Delay"`
 }
 
 type Address struct {
@@ -50,6 +59,7 @@ func main() {
 	router.HandleFunc("/server-status", serverCheck).Methods("GET")
 	router.HandleFunc("/countPackets", countPackets).Methods("GET")
 	router.HandleFunc("/protocols", protocols).Methods("GET")
+	router.HandleFunc("/packetDelay", packetDelay).Methods("GET")
 	http.Handle("/", router)
 
 	//start and listen to requests
@@ -130,6 +140,23 @@ func protocols(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonResponse)
 }
 
+func packetDelay(w http.ResponseWriter, r *http.Request) {
+	log.Println("Successfully entered '/packetDelay' endpoint")
+	var response DelayResponse
+	nodes := prepareResponseDelay()
+
+	response.DelayNode = nodes
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		return
+	}
+
+	w.Write(jsonResponse)
+}
+
 func runPackageCount() (string, error) {
 	cmd := exec.Command("sudo", "go", "run", "./cgroup_skb")
 
@@ -147,6 +174,21 @@ func runPackageCount() (string, error) {
 
 func runPackageProtocols() (string, error) {
 	cmd := exec.Command("sudo", "go", "run", "./xdp")
+
+	var stdout bytes.Buffer
+
+	cmd.Stdout = &stdout
+
+	if err := cmd.Run(); err != nil {
+		return "Error running packages: ", err
+	}
+
+	output := stdout.String()
+	return output, nil
+}
+
+func runPackageDelay() (string, error) {
+	cmd := exec.Command("sudo", "go", "run", "./cgroup_skb_delay")
 
 	var stdout bytes.Buffer
 
@@ -224,4 +266,30 @@ func prepareResponseProtocols() ProtocolNode {
 	protocolNode.OTHER = OTHER
 
 	return protocolNode
+}
+
+func prepareResponseDelay() DelayNode {
+	// var nodes []Node
+
+	output, err := runPackageDelay()
+
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
+
+	var outputString = string(output)
+	// splitString := strings.Split(outputString, ", ")
+
+	// Delay := splitString[0]
+	Delay := outputString
+
+	fmt.Println("Delay(ms):", Delay)
+
+	// var i int
+	// i = 1
+	var DelayNode DelayNode
+	DelayNode.Id = "1"
+	DelayNode.Delay = Delay
+
+	return DelayNode
 }
