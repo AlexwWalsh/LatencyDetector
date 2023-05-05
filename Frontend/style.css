@@ -140,9 +140,7 @@ h4{
   }
 
   button {
-    position: relative;
     padding: 7%;
-    display: block;
     text-decoration: none;
     text-transform: uppercase;
     overflow: hidden;
@@ -150,7 +148,6 @@ h4{
     font-family: Lato;
     font-size: 10px;
     border: none;
-    margin: 0 auto;
     background-color: #0060ae;
    }
    
@@ -161,4 +158,14 @@ h4{
     letter-spacing: 4px;
     z-index: 1;
    }
-   
+   #delay_b{
+    margin-left: 32%;
+    margin-top: 29.5%;
+   }
+   #ingress_egress{
+    margin-left: 32%;
+    margin-top: 15%;
+   }
+   .request{
+    margin-left: 32%;
+   }

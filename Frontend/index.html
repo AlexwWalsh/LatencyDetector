@@ -44,7 +44,7 @@
                     //these fields are for counting packets button in pop up 
                     let ingressingField = `<h4 id="a${elementsToAdd[i].IpAddress}1"><strong>Packets Ingressing:</strong></h4>`;// add it so that loading pops up as well for the ignressing/egressing
                     let egressingField = `<h4 id="b${elementsToAdd[i].IpAddress}2"><strong>Packets Egressing: </strong></h4>`;// add it so that loading pops up as well for the ignressing/egressing
-                    let button = `<button class="request"><span><a>Start</a></span><div></div></button>`;//change button here for classes for loading animation
+                    let button = `<button class="request" id="ingress_egress"><span><a>Start</a></span><div></div></button>`;//change button here for classes for loading animation
                     //these fields are for count protocals button
                     //let Protocal = '<h4 id ="c${elementsToAdd[i].IpAddress}3"><strong>Pick Type Of Packet: </strong></h4>'; //allows for user to pick the type of packet they want  
                     let TCP = '<h4 id ="d${elementsToAdd[i].IpAddress}4"><strong>TCP packets: </strong></h4>'//TCP packet field     
@@ -53,7 +53,7 @@
                     let Protocal_button = `<button class="request"><span><a>start</a></span><div></div></button>`;//change button here for protocal count
                     // these are for packet Delays button
                     let Delay = '<h4 id ="g${elementsToAdd[i].IpAddress}7"><strong>Delay in msec: </strong></h4>' //changes to delay field in packet delay
-                    let Delay_button = `<button class="request"><span><a>Start</a></span><div></div></button>`;//change button here for delay of packet  
+                    let Delay_button = `<button class="request" id="delay_b"><span><a>Start</a></span><div></div></button>`;//change button here for delay of packet  
                     
                     let node = document.createElement("div");
                     
@@ -64,7 +64,9 @@
                     // for counting packets, protocols, and packet delays.
                     // Add event listeners to the options so that they execute the
                     // appropriate functionality when clicked.
-                    let modal = document.createElement("div");
+                    let modal = document.querySelector('.modal');
+                    if(!modal){
+                    modal = document.createElement("div");
                     modal.classList.add("modal");
                     modal.innerHTML = "<span class='close-button'>x</span>" +
                     "<button id='count-packets'>Count Packets</button>" +
@@ -144,9 +146,13 @@
                                 modal.remove();
                                 });
                             });
+                            }   //this is the else if it is clicked more than once the pop up window will still work and not freeze
+                                else{
+                                    modal.style.display = 'absolute';
+                                }
                         });
                 document.getElementById("content").appendChild(node);
-                                    
+                                 
                 }
             }
         };
