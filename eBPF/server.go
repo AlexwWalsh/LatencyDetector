@@ -42,8 +42,10 @@ type ProtocolNode struct {
 }
 
 type DelayNode struct {
-	Id    string `json:"id"`
-	Delay string `json:"Delay"`
+	Id      string `json:"id"`
+	Highest string `json:"Highest"`
+	Average string `json:"Average"`
+	Lowest  string `json:"Lowest"`
 }
 
 type Address struct {
@@ -67,7 +69,7 @@ func main() {
 	// Print a message to indicate that the server is listening
 	log.Println("Server listening on port 8080")
 
-	data := Address{IpAddress: "192.168.1.216"}
+	data := Address{IpAddress: "192.168.1.252"}
 	b, err := json.Marshal(data)
 	log.Println(b)
 	if err != nil {
@@ -76,8 +78,8 @@ func main() {
 
 	//Change the below IP address to either localhost (if not working with the VMs), or the machine's IP address that is running the Node Server
 	//Example alternative:
-	//resp, err := http.Post("http://192.168.1.225:3000/server", "application/json", bytes.NewBuffer(b))
-	resp, err := http.Post("http://localhost:3000/server", "application/json", bytes.NewBuffer(b))
+	resp, err := http.Post("http://192.168.1.64:3000/server", "application/json", bytes.NewBuffer(b))
+	// resp, err := http.Post("http://localhost:3000/server", "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,8 +96,8 @@ func main() {
 
 	//Change this IP address if running on the VM to that machine's IPv4 address
 	//Example alternative:
-	//http.ListenAndServe("168.192.18.1:8080", router)
-	http.ListenAndServe(":8080", router)
+	http.ListenAndServe("192.168.1.252:8080", router)
+	// http.ListenAndServe(":8080", router)
 	log.Println("Server listening on port 8080")
 
 }
@@ -278,18 +280,23 @@ func prepareResponseDelay() DelayNode {
 	}
 
 	var outputString = string(output)
-	// splitString := strings.Split(outputString, ", ")
+	splitString := strings.Split(outputString, " ")
 
-	// Delay := splitString[0]
-	Delay := outputString
-
-	fmt.Println("Delay(ms):", Delay)
+	Highest := splitString[0]
+	Average := splitString[1]
+	Lowest := splitString[2]
+	fmt.Println("1:", outputString)
+	fmt.Println("Highest(ms):", Highest)
+	fmt.Println("Average(ms):", Average)
+	fmt.Println("Lowest(ms):", Lowest)
 
 	// var i int
 	// i = 1
 	var DelayNode DelayNode
 	DelayNode.Id = "1"
-	DelayNode.Delay = Delay
+	DelayNode.Highest = Highest
+	DelayNode.Average = Average
+	DelayNode.Lowest = Lowest
 
 	return DelayNode
 }
