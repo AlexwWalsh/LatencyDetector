@@ -25,12 +25,12 @@ app.get('/', (req, res) => {
 //Make server listen on port 3000
 //Change the below IP address to your machine's IPv4 IP Address OR Localhost if you do not need VM connection
 //Example alternative:
-// const server = app.listen(3000, '192.168.1.225', () => {
-//   console.log('Node.js REST server is running on port 3000');
-// });
-const server = app.listen(3000, 'localhost', () => {
- console.log('Node.js REST server is running on port 3000');
+const server = app.listen(3000, '192.168.1.64', () => {
+  console.log('Node.js REST server is running on port 3000');
 });
+// const server = app.listen(3000, 'localhost', () => {
+//  console.log('Node.js REST server is running on port 3000');
+// });
 
 
 app.post('/server', (req, res) => {
@@ -45,13 +45,15 @@ app.post('/server', (req, res) => {
 })
 
 
-app.get('/grabMuxInfo/:IpAddress', (req, res) => {
+app.get('/grabMuxInfo/:IpAddress/:Endpoint', (req, res) => {
   const { IpAddress } = req.params;
+  console.log(req.params.Endpoint)
   // console.log(IpAddress)
   const options = {
     hostname: IpAddress,
+    // hostname: "localhost",
     port: 8080,
-    path: '/data',
+    path: '/' + req.params.Endpoint,
     method: 'GET'
   };
 
